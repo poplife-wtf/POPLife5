@@ -1,0 +1,12 @@
+/*
+	Creado por Rosen
+*/
+
+private ["_query","_queryResult","_lista"];
+_queryResult = ["SELECT list from wanted",2,true] call DB_fnc_asyncCall;
+
+_lista = [_queryResult select 0 select 0] call DB_fnc_mresToArray;
+if(typeName _lista== "STRING") then {
+	_lista = call compile format["%1", _lista];
+};
+life_wanted_list = _lista; publicVariable "life_wanted_list";

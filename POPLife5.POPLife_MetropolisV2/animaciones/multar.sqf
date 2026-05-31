@@ -1,0 +1,1 @@
+player switchmove "CL3_anim_Ticket";

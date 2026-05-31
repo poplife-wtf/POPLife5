@@ -1,0 +1,673 @@
+author = "poplife.wtf";
+onLoadName = "poplife.wtf";
+onLoadMission = "poplife.wtf";
+loadScreen = "\pop_iconos\textures\logo.paa";
+disabledAI = 1;
+joinUnassigned = 1;
+respawn = BASE;
+respawndelay = 12;
+respawnDialog = 0;
+respawnButton = 0;
+
+
+disableChannels[]={0,1,2};
+overviewText = "$STR_MISC_overviewText";    // Text to be displayed below the overviewPicture on the mission selection screen when the mission is available to play.
+
+class CfgServer {
+    DatabaseName = "altislife"; //Config name that'll be grep in the extdb-conf.ini. Default: [altislife]
+    DebugMode = 1; //Enable many server/hc debugging logs. Default: 0 (1 = Enabled / 0 = Disabled)
+    HeadlessSupport = 0; //Enable/Disable Headless client support. Default: 1 (1 = Enabled / 0 = Disabled)
+    /*
+    Enabled: When HeadlessSupport is set to 1 (enabled), the server will run without fault when no Headless Client is connected. However, it will support the Headless Client if you choose to connect one.
+    Disabled: If HeadlessSupport is set to 0 (disabled), the connection of a Headless Client will make no difference. This option will increase server performance a TINY but negligible amount.
+    */
+};
+
+class Header
+{
+	gameType = RPG;
+	minPlayers = 1;
+	maxPlayers = 50;
+};
+//class CfgRemoteExecCommands {};
+
+//#include "CfgRemoteExec.hpp"
+#include "dialog\MasterHandler.hpp"
+#include "config\Config_Master.hpp"
+#include "BK_FrameWork\BlackFeameWorkDIalogs\_BK_Dlg_All_IncludesDef.h"
+#include "BK_FrameWork\BlackFeameWorkDIalogs\_BK_Dlg_All_Includes.h"
+#include "dialog\FastTravelDialog.hpp"
+#include "dialog\partemedicorellenar.hpp"
+#include "dialog\PDA.hpp"
+#include "infiSTAR_AdminMenu.hpp"
+#include "call.fsm"
+
+class RscTitles
+{
+	#include "dialog\FastTravelHUD.hpp"
+	#include "dialog\progress.hpp"
+	#include "dialog\a3ljailhud.hpp"
+	#include "dialog\badgeDialogV2.h"
+	#include "dialog\DNI_dialog.h"
+	#include "dialog\EMSDNI_dialog.h"
+	#include "dialog\chapas_dialog.h"	
+
+	#include "dialog\roboDeDatos.hpp"
+	#include "dialog\masuno.hpp"
+	#include "dialog\barrita.hpp"
+	#include "dialog\anuncio.hpp"
+
+	#include "dialog\HUDica.hpp"
+	#include "dialog\sangrado.hpp"
+	
+	#include "dialog\partemedicomostrar.hpp"
+	#include "dialog\pop_multa.hpp"
+	#include "dialog\ada_mellaman.hpp"
+	#include "dialog\cargando.hpp"
+		
+	class intro {
+        idd = -1;
+        duration = 15;
+        class controls {
+            class ExampleControl {
+                idc = -1;
+                type = 0;
+                style = 2192;
+                x = 0;
+                y = 0;
+                h = 1;
+                w = 1;
+                font = "EtelkaNarrowMediumPro";
+                sizeEx = 0.05; 
+                colorBackground[] = {1,1,1,1};
+                colorText[] = {1,1,1,1};
+                text = "\pop_iconos\textures\logo.paa";
+                lineSpacing = 1;
+            }; 
+        }; 
+	};	
+};
+
+class CfgFunctions {
+    #include "Functions.hpp"
+	#include "ica\funcionesica.h"
+};
+
+class CfgDebriefing {
+    class NotWhitelisted {
+        title = "$STR_NotWhitelisted_Title";
+        subtitle = "$STR_NotWhitelisted_SubTitle";
+        description = "$STR_NotWhitelisted_Descript";
+        pictureBackground = "";
+        picture = "";
+        pictureColor[] = {0,0.3,0.6,1};
+    };
+
+    class Blacklisted {
+        title = "$STR_Blacklisted_Title";
+        subtitle = "$STR_Blacklisted_SubTitle";
+        description = "$STR_Blacklisted_Descript";
+        pictureBackground = "";
+        picture = "";
+        pictureColor[] = {0,0.3,0.6,1};
+    };
+
+};
+
+class CfgNotifications {
+ 	class MedicalRequestEmerg
+	{
+		title = "EMS Requested";
+		iconPicture = "\A3\ui_f\data\map\mapcontrol\taskIcon_ca.paa";
+		description = "%1";
+		duration = 5;
+		priority = 7;
+	};
+
+	class DeliveryAssigned
+	{
+		title = "Delivery Job Accepted";
+		iconPicture = "\A3\ui_f\data\map\mapcontrol\taskIcon_ca.paa";
+		description = "%1";
+		duration = 10;
+		priority = 7;
+	};
+
+	class DeliveryFailed
+	{
+		title = "Delivery Job Failed";
+		iconPicture = "\A3\ui_f\data\map\mapcontrol\taskiconfailed_ca.paa";
+		description = "%1";
+		duration = 7;
+		priority = 7;
+	};
+
+	class DeliverySucceeded
+	{
+		title = "Delivery Job Completed";
+		iconPicture = "\A3\ui_f\data\map\mapcontrol\taskIcondone_ca.paa";
+		description = "%1";
+		duration = 6;
+		priority = 6;
+	};
+
+	class TextMessage
+	{
+		title = "Received A Text Message";
+		iconPicture = "\pop_iconos\icons\messagenew.paa";
+		description = "%1";
+		duration = 10;
+		priority = 6;
+	};
+
+	class PoliceDispatch
+	{
+		title = "911 Dispatch Center";
+		iconPicture = "\pop_iconos\icons\messagepolice.paa";
+		description = "%1";
+		duration = 10;
+		priority = 6;
+	};
+
+	class AdminDispatch
+	{
+		title = "Admin Dispatch Center";
+		iconPicture = "\pop_iconos\icons\messageadmin.paa";
+		description = "%1";
+		duration = 10;
+		priority = 6;
+	};
+
+	class AdminMessage
+	{
+		title = "Admin Message";
+		iconPicture = "\pop_iconos\icons\messageadmin.paa";
+		description = "%1";
+		duration = 10;
+		priority = 5;
+	};
+	class opcMessage
+	{
+		title = "Mensaje de Evento";
+		iconPicture = "\pop_iconos\icons\messagenew.paa";
+		description = "%1";
+		duration = 10;
+		priority = 5;
+	};
+
+
+	class EMP_Hit
+	{
+		title = "EMP";
+		iconPicture = "\A3\ui_f\data\map\mapcontrol\taskiconfailed_ca.paa";
+		description = "%1";
+		duration = 7;
+		priority = 7;
+	};
+	class Regalo
+	{
+		title = "%1"; // fondo negro
+		iconPicture = "\A3\ui_f\data\map\Vehicle\icons\pictureparachute_ca.paa";
+		iconText = ""; // Short text displayed over the icon. Colored by "color", filled by arguments.
+		description = "%2"; // Brief description displayed as structured text. Colored by "color", filled by arguments.
+		color[] = {1,0.6,0,0.9}; // color del icono y del texto
+		duration = 5;
+		priority = 3;
+		difficulty[] = {"netStats"};
+	};
+};
+
+class ACE_Settings {
+class ace_medical_blood_enabledFor {
+    value = 2;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_common_forceAllSettings {
+    value = 1;
+    typeName = "BOOL";
+    force = 1;
+};
+class ace_common_checkPBOsAction {
+    value = 0;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_common_checkPBOsCheckAll {
+    value = 0;
+    typeName = "BOOL";
+    force = 1;
+};
+class ace_common_checkPBOsWhitelist {
+    value = "[]";
+    typeName = "STRING";
+    force = 1;
+};
+class ace_common_settingFeedbackIcons {
+    value = 1;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_common_settingProgressBarLocation {
+    value = 1;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_common_displayTextColor {
+    value[] = {0, 0, 0, 0.1};
+    typeName = "COLOR";
+    force = 1;
+};
+class ace_common_displayTextFontColor {
+    value[] = {1, 1, 1, 1};
+    typeName = "COLOR";
+    force = 1;
+};
+class ace_interact_menu_alwaysUseCursorSelfInteraction {
+    value = 1;
+    typeName = "BOOL";
+    force = 1;
+};
+class ace_interact_menu_cursorKeepCentered {
+    value = 0;
+    typeName = "BOOL";
+    force = 1;
+};
+class ace_interact_menu_alwaysUseCursorInteraction {
+    value = 1;
+    typeName = "BOOL";
+    force = 1;
+};
+class ace_interact_menu_useListMenu {
+    value = 1;
+    typeName = "BOOL";
+    force = 1;
+};
+class ace_interact_menu_colorTextMax {
+    value[] = {1, 1, 1, 1};
+    typeName = "COLOR";
+    force = 1;
+};
+class ace_interact_menu_colorTextMin {
+    value[] = {1, 1, 1, 0.25};
+    typeName = "COLOR";
+    force = 1;
+};
+class ace_interact_menu_colorShadowMax {
+    value[] = {0, 0, 0, 1};
+    typeName = "COLOR";
+    force = 1;
+};
+class ace_interact_menu_colorShadowMin {
+    value[] = {0, 0, 0, 0.25};
+    typeName = "COLOR";
+    force = 1;
+};
+class ace_interact_menu_textSize {
+    value = 2;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_interact_menu_shadowSetting {
+    value = 2;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_interact_menu_actionOnKeyRelease {
+    value = 0;
+    typeName = "BOOL";
+    force = 1;
+};
+class ace_interact_menu_menuBackground {
+    value = 0;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_interact_menu_addBuildingActions {
+    value = 0;
+    typeName = "BOOL";
+    force = 1;
+};
+class ace_interact_menu_menuAnimationSpeed {
+    value = 0;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_interaction_enableTeamManagement {
+    value = 0;
+    typeName = "BOOL";
+    force = 1;
+};
+class ace_interaction_enableMagazinePassing {
+    value = 0;
+    typeName = "BOOL";
+    force = 1;
+};
+class ace_medical_level {
+    value = 2;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_medicSetting {
+    value = 2;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_increaseTrainingInLocations {
+    value = 0;
+    typeName = "BOOL";
+    force = 1;
+};
+class ace_medical_enableFor {
+    value = 1;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_enableOverdosing {
+    value = 1;
+    typeName = "BOOL";
+    force = 1;
+};
+class ace_medical_bleedingCoefficient {
+    value = 1;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_painCoefficient {
+    value = 1;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_enableAirway {
+    value = 1;
+    typeName = "BOOL";
+    force = 1;
+};
+class ace_medical_enableFractures {
+    value = 1;
+    typeName = "BOOL";
+    force = 1;
+};
+class ace_medical_enableAdvancedWounds {
+    value = 0;
+    typeName = "BOOL";
+    force = 1;
+};
+class ace_medical_enableVehicleCrashes {
+    value = 1;
+    typeName = "BOOL";
+    force = 1;
+};
+class ace_medical_enableScreams {
+    value = 1;
+    typeName = "BOOL";
+    force = 1;
+};
+class ace_medical_playerDamageThreshold {
+    value = 2;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_AIDamageThreshold {
+    value = 1;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_enableUnconsciousnessAI {
+    value = 1;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_remoteControlledAI {
+    value = 1;
+    typeName = "BOOL";
+    force = 1;
+};
+class ace_medical_preventInstaDeath {
+    value = 0;
+    typeName = "BOOL";
+    force = 1;
+};
+class ace_medical_enableRevive {
+    value = 2;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_maxReviveTime {
+    value = 240;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_amountOfReviveLives {
+    value = -1;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_allowDeadBodyMovement {
+    value = 1;
+    typeName = "BOOL";
+    force = 1;
+};
+class ace_medical_allowLitterCreation {
+    value = 1;
+    typeName = "BOOL";
+    force = 1;
+};
+class ace_medical_litterSimulationDetail {
+    value = 1;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_litterCleanUpDelay {
+    value = 0;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_medicSetting_basicEpi {
+    value = 0;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_medicSetting_PAK {
+    value = 0;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_medicSetting_SurgicalKit {
+    value = 0;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_consumeItem_PAK {
+    value = 1;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_consumeItem_SurgicalKit {
+    value = 0;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_useLocation_basicEpi {
+    value = 0;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_useLocation_PAK {
+    value = 0;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_useLocation_SurgicalKit {
+    value = 0;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_useCondition_PAK {
+    value = 1;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_useCondition_SurgicalKit {
+    value = 1;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_keepLocalSettingsSynced {
+    value = 1;
+    typeName = "BOOL";
+    force = 1;
+};
+class ace_medical_healHitPointAfterAdvBandage {
+    value = 0;
+    typeName = "BOOL";
+    force = 1;
+};
+class ace_medical_painIsOnlySuppressed {
+    value = 1;
+    typeName = "BOOL";
+    force = 1;
+};
+class ace_medical_painEffectType {
+    value = 0;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_allowUnconsciousAnimationOnTreatment {
+    value = 1;
+    typeName = "BOOL";
+    force = 1;
+};
+class ace_medical_moveUnitsFromGroupOnUnconscious {
+    value = 1;
+    typeName = "BOOL";
+    force = 1;
+};
+class ace_medical_menuTypeStyle {
+    value = 0;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_delayUnconCaptive {
+    value = 3;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_ai_enabledFor {
+    value = 2;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_menu_allow {
+    value = 1;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_menu_useMenu {
+    value = 1;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_medical_menu_openAfterTreatment {
+    value = 1;
+    typeName = "BOOL";
+    force = 1;
+};
+class ace_medical_menu_maxRange {
+    value = 2;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_optionsmenu_optionMenuDisplaySize {
+    value = 0;
+    typeName = "SCALAR";
+    force = 1;
+};
+class ace_optionsmenu_showNewsOnMainMenu {
+    value = 0;
+    typeName = "BOOL";
+    force = 1;
+};
+class acex_sitting_enable {
+    value = 1;
+    typeName = "BOOL";
+    force = 1;
+};
+class acex_viewrestriction_mode {
+    value = 0;
+    typeName = "SCALAR";
+    force = 1;
+};
+class acex_viewrestriction_modeSelectiveFoot {
+    value = 0;
+    typeName = "SCALAR";
+    force = 1;
+};
+class acex_viewrestriction_modeSelectiveLand {
+    value = 0;
+    typeName = "SCALAR";
+    force = 1;
+};
+class acex_viewrestriction_modeSelectiveAir {
+    value = 0;
+    typeName = "SCALAR";
+    force = 1;
+};
+class acex_viewrestriction_modeSelectiveSea {
+    value = 0;
+    typeName = "SCALAR";
+    force = 1;
+};
+class acex_volume_enabled {
+    value = 0;
+    typeName = "BOOL";
+    force = 1;
+};
+class acex_volume_reduction {
+    value = 5;
+    typeName = "SCALAR";
+    force = 1;
+};
+class acex_volume_fadeDelay {
+    value = 1;
+    typeName = "SCALAR";
+    force = 1;
+};
+class acex_volume_lowerInVehicles {
+    value = 0;
+    typeName = "BOOL";
+    force = 1;
+};
+class acex_volume_showNotification {
+    value = 1;
+    typeName = "BOOL";
+    force = 1;
+};
+class acex_volume_remindIfLowered {
+    value = 0;
+    typeName = "BOOL";
+    force = 1;
+};
+class acex_headless_enabled {
+    value = 0;
+    typeName = "BOOL";
+    force = 1;
+};
+class acex_headless_delay {
+    value = 15;
+    typeName = "SCALAR";
+    force = 1;
+};
+class acex_headless_endMission {
+    value = 0;
+    typeName = "SCALAR";
+    force = 0;
+};
+class acex_headless_log {
+    value = 0;
+    typeName = "BOOL";
+    force = 1;
+}
+};
+
+

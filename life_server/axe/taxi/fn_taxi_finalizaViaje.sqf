@@ -1,0 +1,14 @@
+_dinero = _this select 0;
+_precioPerM = _this select 1;
+_DistanciaTotal = (_dinero/_precioPerM);
+_DistanciaTotal = floor _DistanciaTotal;
+_dinero = _dinero + 2500;
+pop_din = pop_din + _dinero;
+_exp = _DistanciaTotal * 0.008;
+_exp = ceil _exp;
+["exp",_exp] call ica_fnc_arrayexp;
+player removeAction taxi_AcciondeSalida;
+_mensaje = parseText format ["Tu cliente finalizó el servicio de Taxi, obtienes €%1 por haberlo trasportado %2 metros, plus comision coorporativa. Estas listado como Taxi disponible de nuevo.",_dinero,_DistanciaTotal];
+titleText[format["%1",_mensaje],"PLAIN"];
+axe_TaxiTrabajando = true;
+[player] remoteExec ["ica_fnc_taxi_vaAtrabajar",2];

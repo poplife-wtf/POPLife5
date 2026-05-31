@@ -1,0 +1,12 @@
+paqueteaereo_helicoptero_main = "B_Heli_Transport_03_unarmed_F";
+paqueteaereo_helicoptero_seg = "B_Heli_Attack_01_F";
+paqueteaereo_chance = 80;
+paqueteaereo_positions = [[8816.28,10708.6,0.00135803],[8159.27,9227.86,0.00165176],[2012.42,7893.52,0.00110817],[5334.34,4525.63,0.00152349]];
+_paqueteaereo_time_interval = [1,4];
+paqueteaereo_time_min = _paqueteaereo_time_interval select 0;
+paqueteaereo_time_max = _paqueteaereo_time_interval select 1;
+paqueteaereo_time_min = paqueteaereo_time_min*3600;
+paqueteaereo_time_max = paqueteaereo_time_max*3600;
+if (paqueteaereo_time_min>=paqueteaereo_time_max) exitWith {paqueteaereo_enable=false;};
+paqueteaereo_enable=true;
+paqueteaereo_goingon=false;
